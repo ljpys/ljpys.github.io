@@ -19,6 +19,23 @@
         .school-selected { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important; color: white !important; transform: scale(1.05); z-index: 10; }
         input[type=range] { height: 6px; -webkit-appearance: none; background: #e2e8f0; border-radius: 10px; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #3b82f6; border-radius: 50%; cursor: pointer; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        /* AI Detection Visual Styles */
+        .ai-container { position: relative; border-radius: 1.5rem; overflow: hidden; background: #000; }
+        .ai-box-yellow { border: 2.5px solid #fbbf24; position: absolute; border-radius: 4px; }
+        .ai-label-yellow { background: #fbbf24; color: #000; font-size: 10px; font-weight: 900; position: absolute; top: -20px; left: -2.5px; padding: 2px 6px; border-radius: 4px 4px 0 0; }
+        .ai-box-red-dashed { border: 2.5px dashed #ef4444; position: absolute; border-radius: 4px; }
+        .ai-label-red { background: #ef4444; color: white; font-size: 8px; font-weight: 900; position: absolute; bottom: -18px; left: -2.5px; padding: 2px 5px; white-space: nowrap; border-radius: 0 0 4px 4px; }
+        .ai-box-blue { border: 2.5px solid #3b82f6; position: absolute; border-radius: 4px; }
+        .ai-label-blue { background: #3b82f6; color: white; font-size: 8px; font-weight: 900; position: absolute; top: -18px; left: -2.5px; padding: 2px 5px; border-radius: 4px 4px 0 0; }
+        .ai-legend { background: rgba(0,0,0,0.8); color: rgba(255,255,255,0.6); font-size: 8px; font-weight: bold; text-align: center; width: 100%; position: absolute; top: 0; z-index: 20; border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+        /* Tab Specific Styles */
+        .tab-button.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+        }
     </style>
 </head>
 <body class="hero-bg">
@@ -34,7 +51,7 @@
                 </h1>
                 <p class="text-slate-500 text-lg leading-relaxed">
                     대전 서구와 유성구, 10개 학교 아이들의 등하굣길을 지키기 위해<br>
-                    공간, 기기, 그리고 사람을 잇는 3중 차단 시스템이 실시간으로 작동합니다.
+                    공간, 기기, 그리고 사람을 잇는 3중 안전 시스템이 실시간으로 작동합니다.
                 </p>
             </div>
             <div class="hidden lg:block">
@@ -51,178 +68,318 @@
     </header>
 
     <main class="container mx-auto px-6 pb-24">
-        
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-            <section id="strategy1" class="lg:col-span-8 space-y-6">
-                <div class="glass p-8 rounded-[2.5rem] shadow-sm card-hover">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                        <div>
-                            <h2 class="text-2xl font-extrabold flex items-center gap-3">
-                                <span class="flex items-center justify-center w-10 h-10 rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-200 text-base">01</span>
-                                공간 차단: Zero-Zone Index
-                            </h2>
-                            <p class="text-slate-400 text-sm mt-1">지형과 데이터를 분석하여 위험 구역의 동력을 스스로 제어합니다.</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <span class="px-3 py-1 bg-white rounded-lg border border-slate-100 text-[10px] font-bold text-slate-500 shadow-sm">V-WORLD MAP</span>
-                            <span class="px-3 py-1 bg-white rounded-lg border border-slate-100 text-[10px] font-bold text-slate-500 shadow-sm">TAAS API</span>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
-                        
-                        <div class="space-y-6">
+        <div class="flex flex-wrap gap-4 mb-10">
+            <button class="tab-button active px-6 py-3 rounded-full text-base font-bold transition-all duration-300 bg-white text-slate-700 shadow-md" data-tab="strategy1">
+                <span class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">01</span> 공간 안전: ZZI 분석</span>
+            </button>
+            <button class="tab-button px-6 py-3 rounded-full text-base font-bold transition-all duration-300 bg-white text-slate-700 shadow-md" data-tab="strategy2">
+                <span class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs font-bold">02</span> 기기 보안: 픽시 분석</span>
+            </button>
+            <button class="tab-button px-6 py-3 rounded-full text-base font-bold transition-all duration-300 bg-white text-slate-700 shadow-md" data-tab="strategy3">
+                <span class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold">03</span> 사용자 보호: 탑승 인원 분석</span>
+            </button>
+        </div>
+
+        <div id="tab-content-wrapper" class="space-y-8">
+
+            <div id="strategy1" class="tab-content grid grid-cols-1 lg:grid-cols-12 gap-8" style="display: block;">
+                <section class="lg:col-span-8 space-y-6">
+                    <div class="glass p-8 rounded-[2.5rem] shadow-sm card-hover">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                             <div>
-                                <label class="text-xs font-black text-slate-400 uppercase mb-3 block tracking-tighter">분석 대상 학교 선택</label>
-                                <div id="school-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                    
-                                </div>
+                                <h2 class="text-2xl font-extrabold flex items-center gap-3">
+                                    <span class="flex items-center justify-center w-10 h-10 rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-200 text-base">01</span>
+                                    공간 안전: Zero-Zone Index 분석
+                                </h2>
+                                <p class="text-slate-400 text-sm mt-1">지형과 데이터를 분석하여 안전 구역의 동력을 최적으로 제어합니다.</p>
                             </div>
-
-                            <div class="p-6 bg-slate-50/50 rounded-3xl space-y-6 border border-slate-100">
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-end">
-                                        <label class="text-sm font-bold text-slate-700">사고 빈도 <span class="text-[10px] text-slate-400 font-normal ml-2">(최근 3년 누적 건수)</span></label>
-                                        <span class="text-lg font-black text-blue-600"><span id="val-accident">5</span><span class="text-xs ml-1">건</span></span>
-                                    </div>
-                                    <input type="range" id="input-accident" min="0" max="20" step="1" value="5" oninput="updateZZI()" class="w-full">
-                                </div>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-end">
-                                        <label class="text-sm font-bold text-slate-700">지형 경사도 <span class="text-[10px] text-slate-400 font-normal ml-2">(평균 기울기 %)</span></label>
-                                        <span class="text-lg font-black text-blue-600"><span id="val-slope">8</span><span class="text-xs ml-1">%</span></span>
-                                    </div>
-                                    <input type="range" id="input-slope" min="0" max="20" step="1" value="8" oninput="updateZZI()" class="w-full">
-                                </div>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-end">
-                                        <label class="text-sm font-bold text-slate-700">보도폭 <span class="text-[10px] text-slate-400 font-normal ml-2">(실제 도로 너비 m)</span></label>
-                                        <span class="text-lg font-black text-blue-600"><span id="val-sidewalk">2.0</span><span class="text-xs ml-1">m</span></span>
-                                    </div>
-                                    <input type="range" id="input-sidewalk" min="1.0" max="5.0" step="0.1" value="2.0" oninput="updateZZI()" class="w-full">
-                                </div>
+                            <div class="flex gap-2">
+                                <span class="px-3 py-1 bg-white rounded-lg border border-slate-100 text-[10px] font-bold text-slate-500 shadow-sm">V-WORLD MAP</span>
+                                <span class="px-3 py-1 bg-white rounded-lg border border-slate-100 text-[10px] font-bold text-slate-500 shadow-sm">TAAS API</span>
                             </div>
                         </div>
+                        
+                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="text-xs font-black text-slate-400 uppercase mb-3 block tracking-tighter">분석 대상 학교 선택</label>
+                                    <div id="school-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                        
+                                    </div>
+                                </div>
 
-                        <div class="relative group">
-                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-[2rem] blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
-                            <div class="relative bg-slate-900 rounded-[2rem] p-8 text-white h-full flex flex-col items-center justify-between overflow-hidden shadow-2xl">
-                                <div class="text-center z-10">
-                                    <h3 id="selected-school-name" class="text-blue-400 font-bold text-sm mb-6">대전삼천중 안전 리포트</h3>
-                                    <div class="relative inline-block mb-6">
-                                        <svg class="w-40 h-40 transform -rotate-90">
-                                            <circle cx="80" cy="80" r="70" stroke="currentColor" stroke-width="8" fill="transparent" class="text-slate-800" />
-                                            <circle id="zzi-circle-path" cx="80" cy="80" r="70" stroke="currentColor" stroke-width="8" fill="transparent" stroke-dasharray="440" stroke-dashoffset="220" class="text-blue-500 transition-all duration-1000 ease-out" />
-                                        </svg>
-                                        <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                            <span id="zzi-score-display" class="text-5xl font-black">0.50</span>
-                                            <span class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">ZZI INDEX</span>
+                                <div class="p-6 bg-slate-50/50 rounded-3xl space-y-6 border border-slate-100">
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-end">
+                                            <label class="text-sm font-bold text-slate-700">사고 빈도 <span class="text-[10px] text-slate-400 font-normal ml-2">(최근 3년 누적 건수)</span></label>
+                                            <span class="text-lg font-black text-blue-600"><span id="val-accident">5</span><span class="text-xs ml-1">건</span></span>
+                                        </div>
+                                        <input type="range" id="input-accident" min="0" max="20" step="1" value="5" oninput="updateZZI()" class="w-full">
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-end">
+                                            <label class="text-sm font-bold text-slate-700">지형 경사도 <span class="text-[10px] text-slate-400 font-normal ml-2">(평균 기울기 %)</span></label>
+                                            <span class="text-lg font-black text-blue-600"><span id="val-slope">8</span><span class="text-xs ml-1">%</span></span>
+                                        </div>
+                                        <input type="range" id="input-slope" min="0" max="20" step="1" value="8" oninput="updateZZI()" class="w-full">
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-end">
+                                            <label class="text-sm font-bold text-slate-700">보도폭 <span class="text-[10px] text-slate-400 font-normal ml-2">(실제 도로 너비 m)</span></label>
+                                            <span class="text-lg font-black text-blue-600"><span id="val-sidewalk">2.0</span><span class="text-xs ml-1">m</span></span>
+                                        </div>
+                                        <input type="range" id="input-sidewalk" min="1.0" max="5.0" step="0.1" value="2.0" oninput="updateZZI()" class="w-full">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="relative group">
+                                <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-[2rem] blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
+                                <div class="relative bg-slate-900 rounded-[2rem] p-8 text-white h-full flex flex-col items-center justify-between overflow-hidden shadow-2xl">
+                                    <div class="text-center z-10">
+                                        <h3 id="selected-school-name" class="text-blue-400 font-bold text-sm mb-6">대전삼천중 안전 리포트</h3>
+                                        <div class="relative inline-block mb-6">
+                                            <svg class="w-40 h-40 transform -rotate-90">
+                                                <circle cx="80" cy="80" r="70" stroke="currentColor" stroke-width="8" fill="transparent" class="text-slate-800" />
+                                                <circle id="zzi-circle-path" cx="80" cy="80" r="70" stroke="currentColor" stroke-width="8" fill="transparent" stroke-dasharray="440" stroke-dashoffset="220" class="text-blue-500 transition-all duration-1000 ease-out" />
+                                            </svg>
+                                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                                <span id="zzi-score-display" class="text-5xl font-black">0.50</span>
+                                                <span class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">ZZI INDEX</span>
+                                            </div>
+                                        </div>
+                                        <div id="zzi-status-tag" class="px-4 py-1.5 rounded-full text-xs font-black bg-blue-500 mb-6 inline-block">NORMAL</div>
+                                    </div>
+
+                                    <div class="w-full space-y-4 z-10">
+                                        <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">System Action</p>
+                                            <p id="system-reaction" class="text-sm font-bold text-white">최대 속도 15km/h 유지</p>
+                                        </div>
+                                        <div class="p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20">
+                                            <p class="text-[10px] text-blue-400 font-bold uppercase mb-2">Safety Insight</p>
+                                            <p id="safety-insight" class="text-[11px] leading-relaxed text-slate-300">현재 구역은 비교적 안전하지만, 등하교 시간대 밀집도에 주의하세요.</p>
                                         </div>
                                     </div>
-                                    <div id="zzi-status-tag" class="px-4 py-1.5 rounded-full text-xs font-black bg-blue-500 mb-6 inline-block">NORMAL</div>
+                                    
+                                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-600/10 rounded-full blur-3xl"></div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
 
-                                <div class="w-full space-y-4 z-10">
-                                    <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
-                                        <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">System Action</p>
-                                        <p id="system-reaction" class="text-sm font-bold text-white">최대 속도 15km/h 유지</p>
+            <div id="strategy2" class="tab-content grid grid-cols-1 lg:grid-cols-2 gap-8" style="display: none;">
+                
+                <section class="space-y-6">
+                    <div class="glass p-8 rounded-[2.5rem] shadow-sm h-full flex flex-col">
+                        <div class="mb-8">
+                            <h2 class="text-2xl font-extrabold flex items-center gap-3">
+                                <span class="flex items-center justify-center w-10 h-10 rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-200 text-base">02-A</span>
+                                AI 기기 픽시 분석
+                            </h2>
+                            <p class="text-slate-400 text-sm mt-1">림(Rim)과 핸들바(Handlebar)의 형상을 대조하여 픽시 여부를 판별합니다.</p>
+                        </div>
+
+                        <div class="space-y-6 flex-grow">
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-bold text-slate-700">핸들바 형상 일치율 (Fixie Dropbar)</span>
+                                        <span class="text-sm font-black text-emerald-500">98.5%</span>
                                     </div>
-                                    <div class="p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20">
-                                        <p class="text-[10px] text-blue-400 font-bold uppercase mb-2">Safety Insight</p>
-                                        <p id="safety-insight" class="text-[11px] leading-relaxed text-slate-300">현재 구역은 비교적 안전하지만, 등하교 시간대 밀집도에 주의하세요.</p>
+                                    <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                                        <div class="bg-emerald-500 h-full w-[98.5%]"></div>
                                     </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-bold text-slate-700">림/허브 구조 일치율 (Fixed Hub)</span>
+                                        <span class="text-sm font-black text-emerald-500">99.2%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                                        <div class="bg-emerald-500 h-full w-[99.2%]"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-bold text-slate-700">제동 레버 감지 (Brake Lever)</span>
+                                        <span class="text-sm font-black text-red-500">0.2%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                                        <div class="bg-slate-300 h-full w-[0.2%]"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-3">
+                                <div class="flex items-center gap-4 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 text-xs">
+                                        <i class="fas fa-bicycle"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase">Handlebar Scan</p>
+                                        <p class="text-sm font-bold text-slate-800">트랙용 드롭바 형상 및 레버 부재 확인</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 text-xs">
+                                        <i class="fas fa-circle-dot"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase">Rim & Hub Scan</p>
+                                        <p class="text-sm font-bold text-slate-800">하이플랜지 허브 및 락링 구조 식별</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4 p-4 bg-indigo-50 rounded-2xl border border-indigo-100 shadow-sm">
+                                    <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs">
+                                        <i class="fas fa-arrows-left-right"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] font-bold text-indigo-400 uppercase">Cross-Validation</p>
+                                        <p class="text-sm font-bold text-indigo-900">림+핸들바 교차 검증: 픽시 자전거 확정</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 p-4 bg-slate-900 rounded-2xl text-white text-center">
+                            <p class="text-[11px] text-slate-400 leading-relaxed italic">
+                                "준비에 실패하는 것은 실패를 준비하는 것이다."
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="space-y-6">
+                    <div class="bg-slate-900 p-8 rounded-[2.5rem] shadow-2xl text-white h-full relative overflow-hidden card-hover">
+                        <div class="relative z-10 flex flex-col h-full">
+                            <h2 class="text-2xl font-extrabold flex items-center gap-3 mb-6">
+                                <span class="flex items-center justify-center w-10 h-10 rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-900/20 text-base">02-B</span>
+                                실시간 픽시 분석 피드
+                            </h2>
+                            
+                            <div class="ai-container aspect-video mb-6 border border-slate-800 shadow-inner">
+                                <img src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&q=80&w=1000" class="w-full h-full object-cover opacity-60 rounded-2xl" alt="Bicycle Analysis">
+                                <div class="ai-legend text-[9px] py-2 uppercase tracking-tighter">Live Scan: Rim + Handlebar Cross-Validation Engine</div>
+                                
+                                <div class="ai-box-yellow" style="top: 15%; left: 10%; width: 80%; height: 75%;">
+                                    <span class="ai-label-yellow">TARGET_VEHICLE: FIXIE_BIKE (99.8%)</span>
                                 </div>
                                 
-                                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-600/10 rounded-full blur-3xl"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="strategy2" class="lg:col-span-4 space-y-6">
-                <div class="bg-slate-900 p-8 rounded-[2.5rem] shadow-2xl text-white h-full relative overflow-hidden card-hover">
-                    <div class="relative z-10">
-                        <h2 class="text-2xl font-extrabold flex items-center gap-3 mb-6">
-                            <span class="flex items-center justify-center w-10 h-10 rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-900/20 text-base">02</span>
-                            기기 차단: AI 분석
-                        </h2>
-                        
-                        <div class="ai-container aspect-square mb-6 border border-slate-800 shadow-inner">
-                            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover opacity-40 rounded-2xl" alt="Cliff Scene">
-                            <div class="ai-legend text-[9px] py-2">ANALYSIS: TOPOGRAPHIC RISK + EQUIPMENT VALIDATION</div>
-                            
-                            <div class="ai-box-yellow" style="top: 25%; left: 15%; width: 70%; height: 60%;">
-                                <span class="ai-label-yellow">UNSAFE_VEHICLE: 0.99</span>
-                            </div>
-                            <div class="ai-box-red-dashed" style="top: 55%; left: 65%; width: 15%; height: 15%;">
-                                <span class="ai-label-red">NO BRAKE</span>
-                            </div>
-                            <div class="ai-box-red-dashed" style="top: 60%; left: 20%; width: 15%; height: 15%;">
-                                <span class="ai-label-red">NO BRAKE</span>
-                            </div>
-                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-                                <i class="fas fa-circle-exclamation text-6xl text-red-500/50 animate-ping"></i>
-                            </div>
-                        </div>
-
-                        <div class="space-y-4">
-                            <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
-                                <p class="text-xs font-bold text-red-400 mb-1">위험 기기 부팅 차단</p>
-                                <p class="text-[11px] text-slate-400 leading-relaxed">브레이크가 없는 픽시 자전거가 절벽 지형에서 감지되었습니다. 시스템이 사고 가능성을 99%로 예측하여 동력을 영구 차단합니다.</p>
-                            </div>
-                            <div class="glass p-4 rounded-2xl border-white/5">
-                                <p class="text-[10px] italic text-slate-400">"준비에 실패하는 것은 실패를 준비하는 것이다." — Benjamin Franklin</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="strategy3" class="lg:col-span-12">
-                <div class="glass p-8 rounded-[2.5rem] shadow-sm card-hover">
-                    <div class="flex justify-between items-center mb-10">
-                        <h2 class="text-2xl font-extrabold flex items-center gap-3">
-                            <span class="flex items-center justify-center w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-200 text-base">03</span>
-                            인적 차단: NEIS & 탑승 감지
-                        </h2>
-                        <div class="text-right">
-                            <p class="text-xs font-bold text-slate-400 uppercase">Community Impact</p>
-                            <p class="text-lg font-black text-indigo-600">사고 예방률 88% 증가</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                        
-                        <div class="bg-indigo-50 p-8 rounded-[2rem] border border-indigo-100 flex flex-col items-center text-center group">
-                            <div class="w-20 h-20 bg-white rounded-3xl shadow-xl shadow-indigo-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-fingerprint text-4xl text-indigo-600"></i>
-                            </div>
-                            <h4 class="font-bold text-indigo-900 mb-2">NEIS 학생 인증</h4>
-                            <p class="text-xs text-indigo-600/70 leading-relaxed mb-6">학교 반경 2km 지오펜싱 내에서만<br>유효한 인증 토큰을 생성합니다.</p>
-                            <div class="w-full py-3 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-200">인증 상태: 유효 (D-42)</div>
-                        </div>
-
-                        <div class="md:col-span-2 bg-slate-900 p-8 rounded-[2rem] border border-slate-800 shadow-2xl relative overflow-hidden">
-                            <div class="flex justify-between items-center mb-6 relative z-10">
-                                <div>
-                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Real-time ΔW Sensor</p>
-                                    <h4 class="text-lg font-bold text-white">2인 탑승 감지 알고리즘</h4>
+                                <div class="ai-box-blue" style="top: 15%; left: 65%; width: 25%; height: 25%;">
+                                    <span class="ai-label-blue">HANDLEBAR: NO_BRAKE</span>
                                 </div>
-                                <div class="px-3 py-1 bg-red-500 rounded-lg text-[10px] font-black text-white animate-pulse">LOCK ACTIVE</div>
+                                
+                                <div class="ai-box-blue" style="top: 50%; left: 15%; width: 25%; height: 35%;">
+                                    <span class="ai-label-blue">RIM: FIXED_HUB</span>
+                                </div>
+                                
+                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
+                                    <i class="fas fa-shield-halved text-8xl text-blue-500/30 animate-pulse"></i>
+                                </div>
                             </div>
-                            <div class="h-48 relative z-10">
-                                <canvas id="weightDeltaChart"></canvas>
+
+                            <div class="mb-6 bg-red-600 rounded-3xl p-6 shadow-lg shadow-red-900/40 border-2 border-red-400 animate-pulse">
+                                <div class="flex items-center justify-center gap-4 mb-2">
+                                    <i class="fas fa-triangle-exclamation text-3xl"></i>
+                                    <h3 class="text-3xl font-black tracking-tighter">판정 결과: 픽시 자전거 감지</h3>
+                                </div>
+                                <p class="text-center text-xl font-extrabold bg-white text-red-600 py-1 rounded-xl">
+                                    [ 규제 대상 기기: 주행 제한 ]
+                                </p>
                             </div>
+
+                            <div class="space-y-4 flex-grow">
+                                <div class="p-5 bg-blue-500/10 border border-blue-500/20 rounded-2xl">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                        <p class="text-xs font-bold text-blue-400 uppercase">Security Decision</p>
+                                    </div>
+                                    <p class="text-sm font-bold text-white mb-1">스마트 보안 모드 활성화</p>
+                                    <p class="text-[11px] text-slate-400 leading-relaxed">
+                                        림과 핸들바 교차 검증 결과, 제동 장치가 없는 픽시 기기로 최종 확인되었습니다. 안전을 위해 스마트 동력 연결을 즉시 제한하며 수동 주행 모드만을 허용합니다.
+                                    </p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <div class="flex-1 p-4 bg-white/5 rounded-2xl border border-white/10 text-center">
+                                        <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Safety Grade</p>
+                                        <p class="text-xl font-black text-red-500">GRADE E</p>
+                                    </div>
+                                    <div class="flex-1 p-4 bg-white/5 rounded-2xl border border-white/10 text-center">
+                                        <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Auth Status</p>
+                                        <p class="text-xl font-black text-orange-400">RESTRICTED</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute -top-20 -right-20 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="strategy3" class="tab-content grid grid-cols-1 lg:grid-cols-12 gap-8" style="display: none;">
+                <section class="lg:col-span-12">
+                    <div class="glass p-8 rounded-[2.5rem] shadow-sm card-hover">
+                        <div class="flex justify-between items-center mb-10">
+                            <h2 class="text-2xl font-extrabold flex items-center gap-3">
+                                <span class="flex items-center justify-center w-10 h-10 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-200 text-base">03</span>
+                                사용자 보호: 탑승 인원 분석 (ΔW Sensor)
+                            </h2>
+                            <div class="text-right">
+                                <p class="text-xs font-bold text-slate-400 uppercase">Community Impact</p>
+                                <p class="text-lg font-black text-indigo-600">안전 사고 예방률 88% 증가</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
                             
-                            <div class="absolute bottom-4 right-8 opacity-10 text-white italic text-xs">
-                                "안전은 다른 모든 것을 가능하게 하는 기초이다."
+                            <div class="bg-indigo-50 p-8 rounded-[2rem] border border-indigo-100 flex flex-col items-center text-center group">
+                                <div class="w-20 h-20 bg-white rounded-3xl shadow-xl shadow-indigo-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-fingerprint text-4xl text-indigo-600"></i>
+                                </div>
+                                <h4 class="font-bold text-indigo-900 mb-2">NEIS 스마트 인증</h4>
+                                <p class="text-xs text-indigo-600/70 leading-relaxed mb-6">학교 반경 2km 이내에서 유효한<br>학생 전용 안전 토큰을 생성합니다.</p>
+                                <div class="w-full py-3 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-200">인증 상태: 안전 (D-42)</div>
+                            </div>
+
+                            <div class="md:col-span-2 bg-slate-900 p-8 rounded-[2rem] border border-slate-800 shadow-2xl relative overflow-hidden">
+                                <div class="flex justify-between items-center mb-6 relative z-10">
+                                    <div>
+                                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Real-time ΔW Sensor</p>
+                                        <h4 class="text-lg font-bold text-white">동승 방지 알고리즘 분석</h4>
+                                    </div>
+                                    <div class="px-3 py-1 bg-blue-500 rounded-lg text-[10px] font-black text-white animate-pulse">MONITORING</div>
+                                </div>
+                                <div class="h-48 relative z-10">
+                                    <canvas id="weightDeltaChart"></canvas>
+                                </div>
+
+                                <div class="mt-8 bg-orange-600 rounded-3xl p-6 shadow-lg shadow-orange-900/40 border-2 border-orange-400 animate-pulse relative z-10">
+                                    <div class="flex items-center justify-center gap-4 mb-2 text-white">
+                                        <i class="fas fa-users-slash text-3xl"></i>
+                                        <h3 class="text-3xl font-black tracking-tighter">판정 결과: 2인 이상 탑승 감지</h3>
+                                    </div>
+                                    <p class="text-center text-xl font-extrabold bg-white text-orange-600 py-1 rounded-xl">
+                                        [ 안전 규정 위반: 스마트 동력 차단 ]
+                                    </p>
+                                    <p class="mt-4 text-center text-[11px] text-white/80 font-bold">
+                                        무게 변화(ΔW) 센서가 급격한 하중 증가를 감지했습니다. 1인 탑승 기준(최대 110kg)을 초과하여 2인 탑승으로 판정됨에 따라 안전을 위해 전원을 차단합니다.
+                                    </p>
+                                </div>
+                                
+                                <div class="absolute bottom-4 right-8 opacity-10 text-white italic text-xs">
+                                    "안전은 다른 모든 것을 가능하게 하는 기초이다."
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
 
         <footer class="mt-20 text-center space-y-6">
@@ -261,13 +418,17 @@
             { name: "대전삼천중", accident: 12, slope: 3, width: 1.8, insight: "사고 빈도가 높고 길이 좁습니다. 시스템 동력을 5km/h로 엄격히 제한합니다." },
             { name: "대전만년고", accident: 7, slope: 4, width: 3.2, insight: "하교 시간대 차량 흐름과 겹치는 구간을 주의하세요." },
             { name: "대전서대전고", accident: 6, slope: 8, width: 2.8, insight: "경사도가 높아 내리막길 자동 브레이크 시스템이 상시 작동합니다." },
-            { name: "대전괴정고", accident: 9, slope: 12, width: 1.5, insight: "최고 위험 등급. 동력을 차단하고 수동 주행 모드로 전환을 권고합니다." },
+            { name: "대전괴정고", accident: 9, slope: 12, width: 1.5, insight: "최고 위험 등급. 동력을 제한하고 수동 주행 모드 전환을 권고합니다." },
             { name: "대전둔산여고", accident: 8, slope: 3, width: 4.0, insight: "도로폭은 넓으나 사각지대가 많아 AI 센서 감도를 상향합니다." },
             { name: "대전둔원고", accident: 8, slope: 10, width: 2.0, insight: "급경사와 좁은 보도가 결합된 구간입니다. 동력을 제한합니다." }
         ];
 
+        let weightDeltaChartInstance = null;
+
         function initSchoolGrid() {
             const grid = document.getElementById('school-grid');
+            if(!grid) return;
+            grid.innerHTML = ''; 
             schools.forEach((s, index) => {
                 const btn = document.createElement('div');
                 btn.className = `school-item p-2.5 bg-white border border-slate-100 rounded-xl text-[10px] font-bold text-center shadow-sm cursor-pointer ${index === 4 ? 'school-selected' : ''}`;
@@ -299,29 +460,30 @@
             document.getElementById('val-slope').innerText = slope;
             document.getElementById('val-sidewalk').innerText = sidewalkWidth.toFixed(1);
 
-            const sidewalkReciprocal = 1 / sidewalkWidth;
-            const zzi = (accidentCount / 20 * 0.4) + (slope / 20 * 0.3) + (sidewalkReciprocal * 0.3);
+            const sidewalkReciprocal = sidewalkWidth > 0 ? (1 / sidewalkWidth) : 0;
+            const normalizedSidewalkReciprocal = Math.min(sidewalkReciprocal, 1.0); 
             
+            let zzi = (accidentCount / 20 * 0.4) + (slope / 20 * 0.3) + (normalizedSidewalkReciprocal * 0.3);
+            zzi = Math.min(Math.max(zzi, 0), 1); 
+
             const scoreDisplay = document.getElementById('zzi-score-display');
             const statusTag = document.getElementById('zzi-status-tag');
             const reaction = document.getElementById('system-reaction');
             const circlePath = document.getElementById('zzi-circle-path');
 
             scoreDisplay.innerText = zzi.toFixed(2);
-            
-            // Update Circle SVG
             const offset = 440 - (zzi * 440);
             circlePath.style.strokeDashoffset = offset;
 
             if (zzi >= 0.7) {
-                statusTag.innerText = "DANGER";
+                statusTag.innerText = "HIGH RISK";
                 statusTag.className = "px-4 py-1.5 rounded-full text-xs font-black bg-red-600 mb-6 inline-block";
-                reaction.innerText = "시스템 동력 즉시 차단";
+                reaction.innerText = "스마트 동력 자동 제한";
                 circlePath.style.color = "#ef4444";
             } else if (zzi >= 0.4) {
-                statusTag.innerText = "WARNING";
+                statusTag.innerText = "CAUTION";
                 statusTag.className = "px-4 py-1.5 rounded-full text-xs font-black bg-orange-500 mb-6 inline-block";
-                reaction.innerText = "5km/h 속도 제한 활성";
+                reaction.innerText = "5km/h 안전 속도 활성";
                 circlePath.style.color = "#f97316";
             } else {
                 statusTag.innerText = "NORMAL";
@@ -331,54 +493,82 @@
             }
         }
 
-        // Weight Chart
-        const ctx = document.getElementById('weightDeltaChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['0s', '1s', '2s', '3s', '4s', '5s'],
-                datasets: [{
-                    label: 'Weight',
-                    data: [65, 65, 120, 125, 124, 125],
-                    borderColor: '#6366f1',
-                    borderWidth: 4,
-                    fill: true,
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    tension: 0.4,
-                    pointRadius: 0
-                }, {
-                    label: 'Threshold',
-                    data: [110, 110, 110, 110, 110, 110],
-                    borderColor: '#ef4444',
-                    borderDash: [5, 5],
-                    pointRadius: 0,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
-                }
+        function initWeightChart() {
+            if (weightDeltaChartInstance) {
+                weightDeltaChartInstance.destroy();
             }
+            const canvas = document.getElementById('weightDeltaChart');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            weightDeltaChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['0s', '1s', '2s', '3s', '4s', '5s'],
+                    datasets: [{
+                        label: 'Weight (kg)',
+                        data: [65, 65, 120, 125, 124, 125],
+                        borderColor: '#6366f1',
+                        borderWidth: 4,
+                        fill: true,
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        tension: 0.4,
+                        pointRadius: 0
+                    }, {
+                        label: '1-Person Limit (110kg)',
+                        data: [110, 110, 110, 110, 110, 110],
+                        borderColor: '#ef4444',
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tabContent => {
+                tabContent.style.display = 'none';
+            });
+            document.querySelectorAll('.tab-button').forEach(tabButton => {
+                tabButton.classList.remove('active');
+            });
+
+            const selectedTab = document.getElementById(tabId);
+            if (selectedTab) {
+                selectedTab.style.display = 'grid'; 
+            }
+
+            const activeTabButton = document.querySelector(`.tab-button[data-tab="${tabId}"]`);
+            if (activeTabButton) {
+                activeTabButton.classList.add('active');
+            }
+
+            if (tabId === 'strategy1') {
+                initSchoolGrid();
+                updateZZI();
+            }
+            if (tabId === 'strategy3') {
+                initWeightChart();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    showTab(button.dataset.tab);
+                });
+            });
+            showTab('strategy1');
         });
-
-        initSchoolGrid();
-        updateZZI();
     </script>
-
-    <style>
-        /* AI Detection Visual Styles */
-        .ai-container { position: relative; border-radius: 1.5rem; overflow: hidden; background: #000; }
-        .ai-box-yellow { border: 2.5px solid #fbbf24; position: absolute; border-radius: 4px; }
-        .ai-label-yellow { background: #fbbf24; color: #000; font-size: 10px; font-weight: 900; position: absolute; top: -20px; left: -2.5px; padding: 2px 6px; border-radius: 4px 4px 0 0; }
-        .ai-box-red-dashed { border: 2.5px dashed #ef4444; position: absolute; border-radius: 4px; }
-        .ai-label-red { background: #ef4444; color: white; font-size: 8px; font-weight: 900; position: absolute; bottom: -18px; left: -2.5px; padding: 2px 5px; white-space: nowrap; border-radius: 0 0 4px 4px; }
-        .ai-legend { background: rgba(0,0,0,0.8); color: rgba(255,255,255,0.6); font-size: 8px; font-weight: bold; text-align: center; width: 100%; position: absolute; top: 0; z-index: 20; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    </style>
 </body>
 </html>
-
